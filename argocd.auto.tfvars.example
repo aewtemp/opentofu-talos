@@ -1,0 +1,59 @@
+# Copy this file to argocd.auto.tfvars and fill in your values.
+# Auto-loaded by OpenTofu — no -var-file flag needed.
+# Tokens for each repo go in secrets.tfvars (gitignored) under argocd_repo_tokens.
+
+# Trusted CA certificates for internal hostnames (e.g. self-signed GitLab, internal PKI).
+# Map key = hostname, value = PEM certificate. Leave empty if not needed.
+argocd_trusted_certs = {
+  # "gitlab.example.com" = <<-PEM
+  #   -----BEGIN CERTIFICATE-----
+  #   MIIF...
+  #   -----END CERTIFICATE-----
+  # PEM
+}
+
+# ArgoCD repository configs — url and username per repo.
+# Keys must match argocd_repo_tokens in secrets.tfvars.
+argocd_repo_secrets = {
+  deployments = {
+    url      = "https://gitlab.example.com/your-org/deployments.git"
+    username = "gitlab+deploy-token-1"
+  }
+  # second-repo = {
+  #   url      = "https://github.com/your-org/infra.git"
+  #   username = "github-token"
+  # }
+}
+
+# ArgoCD Applications — add/remove entries to manage your workload catalog.
+# Use repo_secret (key into argocd_repo_secrets) to avoid repeating the URL.
+# Alternatively, set repo_url directly when not using a registered repo secret.
+argocd_applications = {
+  # Infrastructure
+  cert-manager = {
+    project           = "infra"
+    repo_secret       = "deployments"
+    target_revision   = "main"
+    path              = "cert-manager-helm"
+    destination_ns    = "cert-manager"
+    server_side_apply = true
+  }
+  kyverno = {
+    project           = "infra"
+    repo_secret       = "deployments"
+    target_revision   = "main"
+    path              = "kyverno-helm"
+    destination_ns    = "kyverno"
+    server_side_apply = true
+  }
+
+  # Applications
+  myapp = {
+    repo_secret     = "deployments"
+    target_revision = "main"
+    path            = "apps/myapp"
+    destination_ns  = "myapp"
+    auto_prune      = false # set false for stateful apps
+    self_heal       = false
+  }
+}

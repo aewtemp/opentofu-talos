@@ -1,0 +1,16 @@
+# Copy this file to helm.auto.tfvars and fill in your values.
+# Auto-loaded by OpenTofu — no -var-file flag needed.
+
+# Cilium CNI — rendered as a Talos inline manifest at plan time.
+cilium_chart_version = "1.17.13"
+
+# Helm releases deployed directly by OpenTofu after cluster bootstrap.
+# Everything else should be managed by ArgoCD (GitOps).
+helm_releases = {
+  argocd = {
+    repository = "https://argoproj.github.io/argo-helm"
+    chart      = "argo-cd"
+    version    = "9.4.10"
+    namespace  = "argocd"
+  }
+}

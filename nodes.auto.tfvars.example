@@ -1,0 +1,83 @@
+# Copy this file to nodes.auto.tfvars and fill in your values.
+# Auto-loaded by OpenTofu — no -var-file flag needed.
+
+# Default VM sizing — can be overridden per node in the nodes map.
+control_plane_defaults = {
+  cores     = 2
+  sockets   = 1
+  memory    = 2048
+  disk_size = 50
+}
+
+worker_defaults = {
+  cores              = 4
+  sockets            = 1
+  memory             = 4096
+  disk_size          = 50
+  disk_size_longhorn = 50
+}
+
+# All nodes across all Proxmox clusters in a single flat map.
+# proxmox_cluster must match one of the keys in proxmox_clusters (terraform.tfvars).
+# Optional per-node fields: cpu_type, cores, sockets, memory, disk_size,
+#                           disk_size_longhorn, iscsi_bridge, ip_address_iscsi,
+#                           longhorn_storage_pool
+nodes = {
+  # --- cluster_a: 2 control plane nodes ---
+  "talos-k8s-cp01" = {
+    role             = "controlplane"
+    proxmox_cluster  = "cluster_a"
+    proxmox_host     = "pve-a-01"
+    mac_address      = "BC:24:11:2A:FD:72"
+    vmid             = 101
+    storage_pool     = "local-lvm"
+    network_bridge   = "vmbr0"
+    network_vlan     = 10
+    iscsi_bridge     = "vmbr2"       # optional: second NIC for iSCSI
+    ip_address_iscsi = "100.64.0.101"
+  }
+  "talos-k8s-cp02" = {
+    role             = "controlplane"
+    proxmox_cluster  = "cluster_a"
+    proxmox_host     = "pve-a-02"
+    mac_address      = "BC:24:11:AE:EC:1B"
+    vmid             = 102
+    storage_pool     = "local-lvm"
+    network_bridge   = "vmbr0"
+    network_vlan     = 10
+  }
+
+  # --- cluster_b: 1 control plane + 2 workers ---
+  "talos-k8s-cp03" = {
+    role            = "controlplane"
+    proxmox_cluster = "cluster_b"
+    proxmox_host    = "pve-b-01"
+    mac_address     = "BC:24:11:92:7B:FD"
+    vmid            = 103
+    storage_pool    = "local-lvm"
+    network_bridge  = "vmbr0"
+    network_vlan    = 10
+  }
+  "talos-k8s-wn01" = {
+    role                  = "worker"
+    proxmox_cluster       = "cluster_b"
+    proxmox_host          = "pve-b-01"
+    mac_address           = "BC:24:11:37:F9:7F"
+    vmid                  = 201
+    storage_pool          = "local-lvm"
+    longhorn_storage_pool = "local-lvm" # optional: second disk for Longhorn
+    network_bridge        = "vmbr0"
+    network_vlan          = 10
+    memory                = 8192         # per-node override
+  }
+  "talos-k8s-wn02" = {
+    role            = "worker"
+    proxmox_cluster = "cluster_b"
+    proxmox_host    = "pve-b-02"
+    mac_address     = "BC:24:11:0B:63:65"
+    vmid            = 202
+    storage_pool    = "local-lvm"
+    network_bridge  = "vmbr0"
+    network_vlan    = 10
+  }
+}

@@ -1,0 +1,58 @@
+# Cilium values — only non-default settings listed here.
+# Chart version: 1.17.x (matches image tag in manifests/cilium.yaml)
+
+crds:
+  install: true
+  keep: true
+
+# Replace kube-proxy entirely
+kubeProxyReplacement: true
+
+# Talos: API server runs on localhost:7445 (no kube-proxy)
+k8sServiceHost: localhost
+k8sServicePort: 7445
+
+# Talos: cgroup v2 is mounted by Talos; do not auto-mount
+cgroup:
+  autoMount:
+    enabled: false
+  hostRoot: /sys/fs/cgroup
+
+# Talos: required capabilities for cilium-agent and clean-cilium-state init containers
+securityContext:
+  capabilities:
+    ciliumAgent:
+      - CHOWN
+      - KILL
+      - NET_ADMIN
+      - NET_RAW
+      - IPC_LOCK
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    cleanCiliumState:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+
+# BGP control plane for LoadBalancer IP advertisement
+bgpControlPlane:
+  enabled: true
+
+# Hubble observability (relay and UI are off by default)
+hubble:
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+
+# Use Kubernetes IPAM (honours pod-cidr assigned by the node controller)
+ipam:
+  mode: kubernetes
+
+# External Envoy proxy (sidecar-free L7 policy)
+envoy:
+  enabled: true

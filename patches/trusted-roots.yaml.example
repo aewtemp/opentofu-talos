@@ -1,0 +1,29 @@
+# Copy this file to trusted-roots.yaml and replace the certificate(s) with your
+# own CA root(s). You can concatenate multiple PEM certificates under the same
+# `certificates` key — separate them with a blank line.
+#
+# This patch is applied to every node (listed in talos.tf alongside the other
+# common patches). It uses Talos' TrustedRootsConfig extension document, which
+# injects the provided CAs into the system trust store and the Kubernetes
+# static pod configurations.
+apiVersion: v1alpha1
+kind: TrustedRootsConfig
+name: custom-ca-example
+certificates: |-
+  -----BEGIN CERTIFICATE-----
+  MIIFiTCCA3GgAwIBAgIQExampleRootCAPlaceholder000000000NBgkqhkiG9w0B
+  AQsFADBLMRMwEQYKCZImiZPyLGQBGRYDbGFuMRUwEwYKCZImiZPyLGQBGRYFY2hh
+  b3MxHTAbBgNVBAMTFEVYQU1QTEUgUk9PVCBDQSAoUExBQ0VIT0xERVIpMB4XDTIz
+  MDEwMTAwMDAwMFoXDTMzMDEwMTAwMDAwMFowSzETMBEGCgmSJomT8ixkARkWA2xh
+  bjEVMBMGCgmSJomT8ixkARkWBWNoYW9zMR0wGwYDVQQDExRFWEFNUExFIFJPT1Qg
+  Q0EgKFBMQUNFSE9MREVSKTE0MDIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIB
+  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAthisIsAPlaceholderYou
+  MustReplaceThisWithYourActualCACertificateInPEMFormatAAAAAAAAAAAAAAAA
+  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+  AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4turK9pVpZAg
+  MBAAAAAAAAAAAAAAAAAAB4turK9pVpZAgMBAAGjaTBnMBMGCSsGAQQBgjcUAgQGHgQA
+  QwBBMA4GA1UdDwEB/wQEAwIBhjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBRj
+  ExampleThumbprintAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACDA
+  NMQNBgkqhkiG9w0BAQsFAAOCAgEAplaceholderplaceholderplaceholderplacehol
+  derplaceholderplaceholderplaceholderplaceholderplaceholderplaceholder==
+  -----END CERTIFICATE-----

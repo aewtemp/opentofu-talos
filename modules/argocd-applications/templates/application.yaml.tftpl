@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${name}
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "${sync_wave}"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ${project}
+  source:
+    repoURL: ${repo_url}
+    targetRevision: ${target_revision}
+    path: ${path}
+  destination:
+    server: ${server}
+    namespace: ${destination_ns}
+  syncPolicy:
+    automated:
+      prune: ${auto_prune}
+      selfHeal: ${self_heal}
+      allowEmpty: false
+    syncOptions:
+%{ if create_namespace ~}
+      - CreateNamespace=true
+%{ endif ~}
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
+%{ if server_side_apply ~}
+      - ServerSideApply=true
+%{ endif ~}
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 10

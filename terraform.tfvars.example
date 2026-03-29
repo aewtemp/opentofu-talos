@@ -1,0 +1,58 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# See also: nodes.auto.tfvars.example, helm.auto.tfvars.example, argocd.auto.tfvars.example
+
+# Proxmox clusters — one entry per site (non-sensitive, safe to commit).
+# Keys must match the provider aliases defined in providers.tf.
+# zone: human-readable label used for topology.kubernetes.io/zone on nodes
+#       (defaults to the map key when omitted).
+proxmox_clusters = {
+  cluster_a = {
+    api_url          = "https://pve-a.example.com:8006/api2/json"
+    tls_insecure     = true
+    iso_storage_pool = "local"
+    zone             = "site-a"
+  }
+  cluster_b = {
+    api_url          = "https://pve-b.example.com:8006/api2/json"
+    tls_insecure     = true
+    iso_storage_pool = "local"
+    zone             = "site-b"
+  }
+}
+
+# Kubernetes cluster identity
+cluster_name     = "talos-k8s"
+cluster_endpoint = "10.0.0.10" # External LB or DNS name (no https://, no port)
+argocd_domain    = "argocd.example.com"
+
+# Cilium networking — LoadBalancer IP pool and BGP peering
+# All timer/selector fields are optional and have sensible defaults.
+cilium_lb_pool = {
+  cidr = "10.0.7.0/24"
+  # name                = "cilium-bgp-pool"  # default
+  # allow_first_last_ip = "No"               # default
+  # service_selector    = "loadbalance: external" # default
+}
+
+cilium_bgp_peering = {
+  local_asn    = 65000
+  peer_asn     = 65000
+  peer_address = "10.0.0.1/32"
+  # connect_retry_seconds = 120  # default
+  # hold_time_seconds     = 90   # default
+  # keepalive_seconds     = 30   # default
+  # service_selector      = "loadbalance: external" # default
+}
+
+# cilium_l2_announce — only needed to override defaults:
+# cilium_l2_announce = {
+#   interface_regex  = "^eth0$"
+#   service_selector = "loadbalance: external"
+# }
+
+# Talos and Kubernetes versions
+talos_version      = "v1.12.5"
+kubernetes_version = "1.35.2"
+
+# Talos system extensions included in the install image (empty = vanilla Talos)
+talos_extensions = []

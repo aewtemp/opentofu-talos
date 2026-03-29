@@ -1,0 +1,28 @@
+# OpenTofu
+.terraform/
+.terraform.*
+!.terraform.lock.hcl
+*.tfplan
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+*.plan
+
+# Secrets (loaded via -var-file=secrets.tfvars)
+secrets.tfvars
+
+# Generated credentials (written by local_file resources)
+talosconfig
+kubeconfig
+
+# Helm chart downloads
+**/charts/
+
+# Age private key
+*.agekey
+
+# SOPS encrypted files
+**/*.secrets.yaml
+
+# Logs
+*.log

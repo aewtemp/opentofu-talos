@@ -1,0 +1,26 @@
+machine:
+  nodeLabels:
+    topology.kubernetes.io/zone: "${proxmox_cluster}"
+    node.kubernetes.io/proxmox-host: "${proxmox_host}"
+cluster:
+  inlineManifests:
+    - name: cilium
+      contents: |
+        ${indent(8, cilium_manifest)}
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: ${hostname}
+auto: off
+---
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: ens18
+%{ if ip_iscsi != "" ~}
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: ens19
+addresses:
+  - address: "${ip_iscsi}/24"
+%{ endif ~}

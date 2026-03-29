@@ -1,0 +1,19 @@
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPPeeringPolicy
+metadata:
+  name: cilium-bgp-peering
+spec:
+  virtualRouters:
+    - exportPodCIDR: false
+      localASN: ${local_asn}
+      neighbors:
+        - connectRetryTimeSeconds: ${connect_retry_seconds}
+          eBGPMultihopTTL: 1
+          holdTimeSeconds: ${hold_time_seconds}
+          keepAliveTimeSeconds: ${keepalive_seconds}
+          peerASN: ${peer_asn}
+          peerAddress: ${peer_address}
+      serviceSelector:
+        matchLabels:
+          ${service_selector}

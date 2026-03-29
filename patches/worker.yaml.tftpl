@@ -1,0 +1,47 @@
+machine:
+  nodeLabels:
+    topology.kubernetes.io/zone: "${proxmox_cluster}"
+    node.kubernetes.io/proxmox-host: "${proxmox_host}"
+  kubelet:
+    extraMounts:
+      - destination: /var/mnt/longhorn
+        type: bind
+        source: /var/mnt/longhorn
+        options:
+          - bind
+          - rshared
+          - rw
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: ${hostname}
+auto: off
+---
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: ens18
+%{ if ip_iscsi != "" ~}
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: ens19
+addresses:
+  - address: "${ip_iscsi}/24"
+%{ endif ~}
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: longhorn
+provisioning:
+  diskSelector:
+    match: disk.dev_path == "/dev/sdb"
+  minSize: 32GiB
+  grow: true
+filesystem:
+  type: ext4
+# Optional encryption
+# encryption:
+#   provider: luks2
+#   keys:
+#     - slot: 0
+#       tpm: {}

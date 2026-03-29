@@ -1,0 +1,12 @@
+---
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: "${name}"
+spec:
+  blocks:
+    - cidr: "${cidr}"
+  allowFirstLastIPs: "${allow_first_last_ip}"
+  serviceSelector:
+    matchLabels:
+      ${service_selector}

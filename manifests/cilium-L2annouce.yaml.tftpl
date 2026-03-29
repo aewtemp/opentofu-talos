@@ -1,0 +1,13 @@
+---
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: policy1
+spec:
+  serviceSelector:
+    matchLabels:
+      ${service_selector}
+  interfaces:
+    - ${interface_regex}
+  externalIPs: true
+  loadBalancerIPs: true
