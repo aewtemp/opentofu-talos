@@ -1,4 +1,38 @@
-# One module block per Proxmox cluster — copy/change suffix and alias to add a new cluster.
+# One pair of module blocks per Proxmox cluster — copy/change suffix and alias to add a new cluster.
+
+module "proxmox_cluster_config_a" { # cluster_a: Proxmox Clustername
+  source    = "./modules/proxmox-cluster-config"
+  providers = { proxmox = proxmox.cluster_a }
+
+  time_zone       = var.proxmox_clusters["cluster_a"].time_zone
+  cluster_options = var.proxmox_clusters["cluster_a"].cluster_options
+}
+
+module "proxmox_cluster_config_b" { # cluster_b: Proxmox Clustername
+  source    = "./modules/proxmox-cluster-config"
+  providers = { proxmox = proxmox.cluster_b }
+
+  time_zone       = var.proxmox_clusters["cluster_b"].time_zone
+  cluster_options = var.proxmox_clusters["cluster_b"].cluster_options
+}
+
+module "proxmox_cluster_config_c" { # cluster_c: Proxmox Clustername
+  source    = "./modules/proxmox-cluster-config"
+  providers = { proxmox = proxmox.cluster_c }
+
+  time_zone       = var.proxmox_clusters["cluster_c"].time_zone
+  cluster_options = var.proxmox_clusters["cluster_c"].cluster_options
+}
+
+module "proxmox_cluster_config_d" { # cluster_d: Proxmox Clustername
+  source    = "./modules/proxmox-cluster-config"
+  providers = { proxmox = proxmox.cluster_d }
+
+  time_zone       = var.proxmox_clusters["cluster_d"].time_zone
+  cluster_options = var.proxmox_clusters["cluster_d"].cluster_options
+}
+
+
 
 module "proxmox_cluster_a" { # cluster_a: Proxmox Clustername
   source    = "./modules/proxmox-nodes"

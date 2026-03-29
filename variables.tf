@@ -12,6 +12,32 @@ variable "proxmox_clusters" {
       storage_pool          = string           # host-specific override (takes precedence over cluster default)
       longhorn_storage_pool = optional(string)
     })), {})
+    time_zone = optional(string) # IANA timezone for all PVE hosts; null = unmanaged
+    cluster_options = optional(object({
+      language                   = optional(string)
+      keyboard                   = optional(string)
+      email_from                 = optional(string)
+      max_workers                = optional(number)
+      bandwidth_limit_default    = optional(number)
+      bandwidth_limit_clone      = optional(number)
+      bandwidth_limit_migration  = optional(number)
+      bandwidth_limit_move       = optional(number)
+      bandwidth_limit_restore    = optional(number)
+      migration_cidr             = optional(string)
+      migration_type             = optional(string)
+      next_id = optional(object({
+        lower = optional(number)
+        upper = optional(number)
+      }))
+      notify = optional(object({
+        ha_fencing_mode            = optional(string)
+        ha_fencing_target          = optional(string)
+        package_updates            = optional(string)
+        package_updates_target     = optional(string)
+        package_replication        = optional(string)
+        package_replication_target = optional(string)
+      }))
+    }))
   }))
 }
 

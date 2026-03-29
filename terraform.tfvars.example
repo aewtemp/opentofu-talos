@@ -14,9 +14,10 @@ proxmox_clusters = {
   cluster_a = {
     api_url            = "https://pve-a.example.com:8006/api2/json"
     tls_insecure       = true
-    iso_storage_pool   = "ISOs"  # shared NFS/Ceph datastore
-    iso_storage_shared = true    # download ISO once; false (default) = download per host
+    iso_storage_pool   = "ISOs"        # shared NFS/Ceph datastore
+    iso_storage_shared = true          # download ISO once; false (default) = download per host
     zone               = "site-a"
+    time_zone          = "Europe/Berlin" # IANA timezone applied to all PVE hosts; omit to leave unmanaged
     host_config = {
       "pve-a-01" = {
         storage_pool          = "fast"
@@ -27,6 +28,15 @@ proxmox_clusters = {
         longhorn_storage_pool = "local-lv"
       }
     }
+    # cluster_options: all fields optional; omit the block entirely to leave unmanaged
+    cluster_options = {
+      keyboard       = "de"          # Proxmox UI keyboard layout
+      language       = "en"          # Proxmox UI language
+      # email_from   = "pve@example.com"
+      # migration_type = "secure"
+      # next_id = { lower = 100, upper = 999999999 }
+      # notify = { package_updates = "always", package_updates_target = "default-matcher" }
+    }
   }
   # Single-host or uniform-storage cluster: use cluster defaults instead.
   # host_config can be omitted entirely.
@@ -35,8 +45,12 @@ proxmox_clusters = {
     tls_insecure                  = true
     iso_storage_pool              = "local"
     zone                          = "site-b"
+    time_zone                     = "UTC"
     default_storage_pool          = "local-lvm"
     default_longhorn_storage_pool = "local-lvm" # omit if no Longhorn disk at this site
+    cluster_options = {
+      keyboard = "en-us"
+    }
   }
 }
 
