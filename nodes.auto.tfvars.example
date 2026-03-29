@@ -18,66 +18,101 @@ worker_defaults = {
 }
 
 # All nodes across all Proxmox clusters in a single flat map.
-# proxmox_cluster must match one of the keys in proxmox_clusters (terraform.tfvars).
-# Optional per-node fields: cpu_type, cores, sockets, memory, disk_size,
-#                           disk_size_longhorn, iscsi_bridge, ip_address_iscsi,
-#                           longhorn_storage_pool
+#
+# Required per node:
+#   role            — "controlplane" or "worker"
+#   proxmox_cluster — must match a key in proxmox_clusters (terraform.tfvars)
+#   mac_address     — static MAC for the primary NIC (set in Proxmox)
+#   network_bridge  — Proxmox bridge for Kubernetes traffic (e.g. "vmbr0")
+#
+# Auto-resolved (omit to inherit from host_config in terraform.tfvars):
+#   proxmox_host          — PVE node name; auto-assigned via round-robin when omitted
+#   storage_pool          — primary disk pool; from host_config when omitted
+#   longhorn_storage_pool — Longhorn disk pool; from host_config when omitted
+#                           (no Longhorn disk created if host_config has none)
+#
+# Optional overrides:
+#   vmid, cpu_type, cores, sockets, memory, disk_size, disk_size_longhorn,
+#   network_vlan, iscsi_bridge, ip_address_iscsi
 nodes = {
-  # --- cluster_a: 2 control plane nodes ---
+  # --- cluster_a: 3 control plane + 4 workers, auto-distributed across hosts ---
+  # proxmox_host / storage_pool inherited from cluster_a.host_config in terraform.tfvars.
   "talos-k8s-cp01" = {
-    role             = "controlplane"
-    proxmox_cluster  = "cluster_a"
-    proxmox_host     = "pve-a-01"
-    mac_address      = "BC:24:11:2A:FD:72"
-    vmid             = 101
-    storage_pool     = "local-lvm"
-    network_bridge   = "vmbr0"
-    network_vlan     = 10
-    iscsi_bridge     = "vmbr2"       # optional: second NIC for iSCSI
+    role            = "controlplane"
+    proxmox_cluster = "cluster_a"
+    mac_address     = "BC:24:11:2A:FD:72"
+    vmid            = 101
+    network_bridge  = "vmbr0"
+    network_vlan    = 10
+    iscsi_bridge    = "vmbr2"        # optional: second NIC for iSCSI
     ip_address_iscsi = "100.64.0.101"
   }
   "talos-k8s-cp02" = {
-    role             = "controlplane"
-    proxmox_cluster  = "cluster_a"
-    proxmox_host     = "pve-a-02"
-    mac_address      = "BC:24:11:AE:EC:1B"
-    vmid             = 102
-    storage_pool     = "local-lvm"
-    network_bridge   = "vmbr0"
-    network_vlan     = 10
+    role            = "controlplane"
+    proxmox_cluster = "cluster_a"
+    mac_address     = "BC:24:11:AE:EC:1B"
+    vmid            = 102
+    network_bridge  = "vmbr0"
+    network_vlan    = 10
   }
-
-  # --- cluster_b: 1 control plane + 2 workers ---
   "talos-k8s-cp03" = {
     role            = "controlplane"
-    proxmox_cluster = "cluster_b"
-    proxmox_host    = "pve-b-01"
+    proxmox_cluster = "cluster_a"
     mac_address     = "BC:24:11:92:7B:FD"
     vmid            = 103
-    storage_pool    = "local-lvm"
     network_bridge  = "vmbr0"
     network_vlan    = 10
   }
   "talos-k8s-wn01" = {
-    role                  = "worker"
-    proxmox_cluster       = "cluster_b"
-    proxmox_host          = "pve-b-01"
-    mac_address           = "BC:24:11:37:F9:7F"
-    vmid                  = 201
-    storage_pool          = "local-lvm"
-    longhorn_storage_pool = "local-lvm" # optional: second disk for Longhorn
-    network_bridge        = "vmbr0"
-    network_vlan          = 10
-    memory                = 8192         # per-node override
+    role            = "worker"
+    proxmox_cluster = "cluster_a"
+    mac_address     = "BC:24:11:37:F9:7F"
+    vmid            = 201
+    network_bridge  = "vmbr0"
+    network_vlan    = 10
+    memory          = 8192           # per-node override
   }
   "talos-k8s-wn02" = {
     role            = "worker"
-    proxmox_cluster = "cluster_b"
-    proxmox_host    = "pve-b-02"
+    proxmox_cluster = "cluster_a"
     mac_address     = "BC:24:11:0B:63:65"
     vmid            = 202
-    storage_pool    = "local-lvm"
     network_bridge  = "vmbr0"
     network_vlan    = 10
+  }
+  "talos-k8s-wn03" = {
+    role            = "worker"
+    proxmox_cluster = "cluster_a"
+    mac_address     = "BC:24:11:90:DC:5B"
+    vmid            = 203
+    network_bridge  = "vmbr0"
+    network_vlan    = 10
+  }
+  "talos-k8s-wn04" = {
+    role            = "worker"
+    proxmox_cluster = "cluster_a"
+    mac_address     = "BC:24:11:C1:C6:CF"
+    vmid            = 204
+    network_bridge  = "vmbr0"
+    network_vlan    = 10
+  }
+
+  # --- cluster_b: 1 control plane + 1 worker (single-host cluster) ---
+  "talos-k8s-cp04" = {
+    role            = "controlplane"
+    proxmox_cluster = "cluster_b"
+    mac_address     = "BC:24:11:92:7C:01"
+    vmid            = 104
+    network_bridge  = "vmbr0"
+    network_vlan    = 10
+  }
+  "talos-k8s-wn05" = {
+    role            = "worker"
+    proxmox_cluster = "cluster_b"
+    mac_address     = "BC:24:11:C1:C6:D0"
+    vmid            = 205
+    network_bridge  = "vmbr0"
+    network_vlan    = 10
+    # storage_pool = "custom-pool"  # explicit override example
   }
 }

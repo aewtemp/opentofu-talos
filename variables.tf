@@ -3,8 +3,15 @@ variable "proxmox_clusters" {
   type = map(object({
     api_url          = string
     tls_insecure     = bool
-    iso_storage_pool = optional(string, "local")
+    iso_storage_pool   = optional(string, "local")
+    iso_storage_shared = optional(bool, false) # true = shared datastore, download ISO once
     zone             = optional(string) # topology.kubernetes.io/zone label; defaults to the map key
+    default_storage_pool          = optional(string) # cluster-wide storage pool fallback
+    default_longhorn_storage_pool = optional(string) # cluster-wide Longhorn pool fallback
+    host_config = optional(map(object({
+      storage_pool          = string           # host-specific override (takes precedence over cluster default)
+      longhorn_storage_pool = optional(string)
+    })), {})
   }))
 }
 
@@ -21,14 +28,14 @@ variable "proxmox_cluster_credentials" {
 variable "nodes" {
   description = "Flat map of all nodes across all Proxmox clusters, keyed by node name"
   type = map(object({
-    role                  = string # "controlplane" or "worker"
-    proxmox_cluster       = string # key into proxmox_clusters (must match a provider alias)
-    proxmox_host          = string # PVE node name within the cluster
+    role                  = string           # "controlplane" or "worker"
+    proxmox_cluster       = string           # key into proxmox_clusters (must match a provider alias)
+    proxmox_host          = optional(string) # PVE node name; null = auto-assigned via round-robin
     mac_address           = string
     ip_address_iscsi      = optional(string) # null = no iSCSI IP assignment
     vmid                  = optional(number)
-    storage_pool          = string
-    longhorn_storage_pool = optional(string)
+    storage_pool          = optional(string) # null = resolved from proxmox_clusters[*].host_config
+    longhorn_storage_pool = optional(string) # null = resolved from host_config (no disk if host has none)
     network_bridge        = string
     network_vlan          = optional(number)
     iscsi_bridge          = optional(string) # null = no second NIC

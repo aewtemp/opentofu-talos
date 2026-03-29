@@ -56,7 +56,7 @@ data "talos_machine_configuration" "control_plane" {
       hostname        = each.key
       ip_iscsi        = each.value.ip_address_iscsi != null ? each.value.ip_address_iscsi : ""
       proxmox_cluster = local.proxmox_clusters[each.value.proxmox_cluster].zone
-      proxmox_host    = each.value.proxmox_host
+      proxmox_host    = local.all_node_hosts[each.key]
       cilium_manifest = local.cilium_manifest
     }),
     file("${path.module}/patches/trusted-roots.yaml"),
@@ -84,7 +84,7 @@ data "talos_machine_configuration" "worker" {
       hostname        = each.key
       ip_iscsi        = each.value.ip_address_iscsi != null ? each.value.ip_address_iscsi : ""
       proxmox_cluster = local.proxmox_clusters[each.value.proxmox_cluster].zone
-      proxmox_host    = each.value.proxmox_host
+      proxmox_host    = local.all_node_hosts[each.key]
     }),
     file("${path.module}/patches/trusted-roots.yaml"),
   ]

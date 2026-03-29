@@ -71,7 +71,7 @@ Edit each file to match your environment. See [Configuration Files](#configurati
 ### 3. Add provider aliases for your Proxmox clusters
 
 For each entry in `proxmox_clusters` (terraform.tfvars) you need a matching `provider "proxmox"` block
-in `providers.tf`. The four existing aliases (`va`, `mp`, `depve10`, `depve20`) can serve as templates.
+in `providers.tf`. The four existing aliases (`cluster_a`, `cluster_b`, `cluster_c`, `cluster_d`) can serve as templates.
 
 ### 4. Deploy
 
@@ -162,7 +162,7 @@ Each has a matching `.example` file.
 
 `locals.tf`, `variables.tf`, and `talos.tf` need no changes.
 
-Current sites: `cluster_a` (AV-PVE), `cluster_b` (MP-PVE), `cluster_c` (depve10), `cluster_d` (depve20)
+Current sites: `cluster_a` (cluster_a-PVE), `cluster_b` (cluster_b-PVE), `cluster_c` (cluster_c-PVE), `cluster_d` (cluster_d-PVE)
 
 ### Add or remove nodes
 

@@ -6,17 +6,37 @@
 # zone: human-readable label used for topology.kubernetes.io/zone on nodes
 #       (defaults to the map key when omitted).
 proxmox_clusters = {
+  # Multi-host cluster with non-uniform storage: use host_config to specify
+  # per-host storage pools. Storage resolution order:
+  #   1. per-node storage_pool (nodes.auto.tfvars)
+  #   2. host_config[assigned_host].storage_pool
+  #   3. default_storage_pool (cluster-wide fallback)
   cluster_a = {
-    api_url          = "https://pve-a.example.com:8006/api2/json"
-    tls_insecure     = true
-    iso_storage_pool = "local"
-    zone             = "site-a"
+    api_url            = "https://pve-a.example.com:8006/api2/json"
+    tls_insecure       = true
+    iso_storage_pool   = "ISOs"  # shared NFS/Ceph datastore
+    iso_storage_shared = true    # download ISO once; false (default) = download per host
+    zone               = "site-a"
+    host_config = {
+      "pve-a-01" = {
+        storage_pool          = "fast"
+        longhorn_storage_pool = "fast-lv" # omit if no Longhorn disk on this host
+      }
+      "pve-a-02" = {
+        storage_pool          = "local-lvm"
+        longhorn_storage_pool = "local-lv"
+      }
+    }
   }
+  # Single-host or uniform-storage cluster: use cluster defaults instead.
+  # host_config can be omitted entirely.
   cluster_b = {
-    api_url          = "https://pve-b.example.com:8006/api2/json"
-    tls_insecure     = true
-    iso_storage_pool = "local"
-    zone             = "site-b"
+    api_url                       = "https://pve-b.example.com:8006/api2/json"
+    tls_insecure                  = true
+    iso_storage_pool              = "local"
+    zone                          = "site-b"
+    default_storage_pool          = "local-lvm"
+    default_longhorn_storage_pool = "local-lvm" # omit if no Longhorn disk at this site
   }
 }
 
